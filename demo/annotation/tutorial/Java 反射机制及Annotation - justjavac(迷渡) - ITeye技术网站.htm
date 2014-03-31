@@ -1,0 +1,961 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0038)http://justjavac.iteye.com/blog/714654 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr"><head _wxlaelhepjgkhpnfpeodbobgikmbjecnne_="shake_1.0"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站</title>
+    <meta name="description" content="    Java   反射是  Java  语言的一个很重要的特征。  它允许运行中的   Java   程序对自身进行检查，并能直接操作程序的内部属性。例如，使用  它能获得  Java   类中各成员的名称并显示出来。                 Java   反射机制主要提供了以下功能：    a  ．在运行时判断任意一个对象所属的类。    b  ．在运行时构造任意一个类的对象。     ...">
+    <meta name="keywords" content="Java, junit, 虚拟机, JVM, 数据结构 Java 反射机制及Annotation">
+    <link rel="shortcut icon" href="http://justjavac.iteye.com/images/favicon.ico" type="image/x-icon">
+    <link rel="search" type="application/opensearchdescription+xml" href="http://justjavac.iteye.com/open_search.xml" title="ITeye">
+    <link href="http://justjavac.iteye.com/rss" rel="alternate" title="justjavac(迷渡)" type="application/rss+xml">
+    <link href="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/blog.css" media="screen" rel="stylesheet" type="text/css">
+<link href="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/black.css" media="screen" rel="stylesheet" type="text/css">
+    <script type="text/javascript" async="" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/ga.js"></script><script type="text/javascript" async="" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/ga.js"></script><script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/application.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-535605-1']);
+  _gaq.push(['_setDomainName', 'iteye.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+      <link href="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/SyntaxHighlighter.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/shCoreCommon.js" type="text/javascript"></script>
+<script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/hotkey.js" type="text/javascript"></script>
+  <script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/code_favorites.js" type="text/javascript"></script>
+<script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/weiboshare.js" type="text/javascript"></script>
+  <style type="text/css" id="GINGER_SOFTWARE_style">.GINGER_SOFTWARE_noMark { background : transparent; }  .GINGER_SOFTWARE_wrapper{ position: absolute; overflow: hidden; margin: 0px; padding: 0px; border: 0px solid transparent } .GINGER_SOFTWARE_contour { position : absolute; margin: 0px; }  .GINGER_SOFTWARE_richText { margin : 0px; padding-bottom: 3px; border-width: 0px; border-color: transparent; display: block; color: transparent; -webkit-text-fill-color: transparent; overflow: hidden; white-space: pre-wrap;}  .GINGER_SOFTWARE_inputWrapper .GINGER_SOFTWARE_richText {position: absolute;}  .GINGER_SOFTWARE_canvas { display:none; background-repeat:no-repeat;}  .GINGER_SOFTWARE_control .GINGER_SOFTWARE_correct, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_SpellingCorrect, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_spelling, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_mark {border-top-left-radius:2px; border-top-right-radius:2px; border-bottom-right-radius:2px; border-bottom-left-radius:2px;} .GINGER_SOFTWARE_control .GINGER_SOFTWARE_correct, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_SpellingCorrect, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_spelling, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_mark {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFTWARE_control .GINGER_SOFTWARE_correct.GINGER_SOFTWARE_synonym, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_SpellingCorrect.GINGER_SOFTWARE_synonym, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_spelling.GINGER_SOFTWARE_synonym, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_mark.GINGER_SOFTWARE_synonym {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFTWARE_control .GINGER_SOFTWARE_correct.GINGER_SOFTWARE_noSuggestion, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_SpellingCorrect.GINGER_SOFTWARE_noSuggestion, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_spelling.GINGER_SOFTWARE_noSuggestion, .GINGER_SOFTWARE_control .GINGER_SOFTWARE_mark.GINGER_SOFTWARE_noSuggestion {background-image:url(data:image/gif;base64,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)!important;} .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_correct, .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_SpellingCorrect, .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_spelling, .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_mark {position:relative; background-image:none!important;} .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_markHighlightLeft { position : absolute; left:-2px; top:0px; bottom:0px; width:2px;} .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_markHighlightRight { position : absolute; right:-2px; top:0px; bottom:0px; width:2px;} .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_markHighlightTop { position : absolute; left:0px; right:0px; top:-2px; height:3px;} .GINGER_SOFTWARE_richText .GINGER_SOFTWARE_markHighlightBottom { position : absolute; left:0px; right:0px; bottom:-2px; height:3px;}</style></head>
+  <body screen_capture_injected="true" ginger_software_stylesheet="true" ginger_software_doc="true">
+    <div id="header">
+      <div id="blog_site_nav">
+  <a href="http://www.iteye.com/" class="homepage">首页</a>
+  <a href="http://www.iteye.com/news">资讯</a>
+  <a href="http://www.iteye.com/magazines">精华</a>
+  <a href="http://www.iteye.com/forums">论坛</a>
+  <a href="http://www.iteye.com/ask">问答</a>
+  <a href="http://www.iteye.com/blogs">博客</a>
+  <a href="http://www.iteye.com/blogs/subjects">专栏</a>
+  <a href="http://www.iteye.com/groups">群组</a>
+  <a href="http://justjavac.iteye.com/blog/714654#" onclick="return false;" id="msna"><u>更多</u> <small>▼</small></a>
+  <div class="quick_menu" style="display:none;">
+    <a target="_blank" href="http://job.iteye.com/iteye">招聘</a>
+    <a href="http://www.iteye.com/search">搜索</a>
+  </div>
+</div>
+
+      <div id="user_nav">
+      <a href="http://justjavac.iteye.com/login" class="welcome" title="登录">您还未登录 !</a>
+    <a href="http://justjavac.iteye.com/login">登录</a>
+    <a href="http://justjavac.iteye.com/signup" class="nobg">注册</a>
+  </div>
+
+    </div>
+
+    <div id="page">
+      <div id="branding" class="clearfix">
+        <div id="blog_name">
+          <h1><a href="http://justjavac.iteye.com/">justjavac(迷渡)</a></h1>
+        </div>
+        <div id="fd"></div>
+        <div id="blog_navbar">
+          <ul>
+            <li class="blog_navbar_for"><a href="http://justjavac.iteye.com/"><strong>博客</strong></a></li>
+            <li><a href="http://justjavac.iteye.com/weibo">微博</a></li>
+            <li><a href="http://justjavac.iteye.com/album">相册</a></li>
+            <li><a href="http://justjavac.iteye.com/link">收藏</a></li>
+            <li><a href="http://justjavac.iteye.com/blog/guest_book">留言</a></li>
+            <li><a href="http://justjavac.iteye.com/blog/profile">关于我</a></li>
+          </ul>
+    
+          <div class="search">
+            <form action="http://justjavac.iteye.com/blog/search" method="get">
+              <input class="search_text" id="query" name="query" style="margin-left: 10px;width: 110px;" type="text" value="">
+              <input class="submit_search" type="submit" value="">
+            </form>
+          </div> 
+          <div id="fd"></div>         
+        </div>
+      </div>
+      
+      <div id="content" class="clearfix">
+        <div id="main">
+          
+
+
+
+          
+
+
+<div class="h-entry" style="display:none">
+  <a href="http://justjavac.iteye.com/" class="p-author" target="_blank">justjavac</a>
+</div>
+
+
+<div class="blog_main">
+  <div class="blog_title">
+    <h3>
+      <a href="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站.htm">Java 反射机制及Annotation</a>
+      <em class="actions">      </em>
+    </h3>
+    <ul class="blog_categories"><strong>博客分类：</strong> <li><a href="http://justjavac.iteye.com/category/28320">Java</a></li> </ul>
+        <div class="news_tag"><a href="http://www.iteye.com/blogs/tag/Java">Java</a><a href="http://www.iteye.com/blogs/tag/junit">junit</a><a href="http://www.iteye.com/blogs/tag/%E8%99%9A%E6%8B%9F%E6%9C%BA">虚拟机</a><a href="http://www.iteye.com/blogs/tag/JVM">JVM</a><a href="http://www.iteye.com/blogs/tag/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84">数据结构</a></div>
+  </div>
+
+  <div id="blog_content" class="blog_content">
+    <p><span style="color: black; font-size: 12pt;">&nbsp;&nbsp;<span style="color: #0000ff;"><span style="font-size: 12pt;">&nbsp; Java </span>
+<span style="">反射是</span>
+<span style="font-size: 12pt;">Java</span>
+<span style="">语言的一个很重要的特征。</span>
+<span style="">它允许运行中的</span>
+<span style="font-size: 12pt;"> Java </span>
+<span style="">程序对自身进行检查，并能直接操作程序的内部属性。例如，使用
+它能获得</span>
+<span style="font-size: 12pt;">Java </span>
+<span style="">类中各成员的名称并显示出来。</span>
+</span>
+</span>
+</p>
+<p class="MsoNormal"><span style="font-size: 12pt;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+<span style="font-size: 12pt;">Java </span>
+<span style="">反射机制主要提供了以下功能：</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="font-size: 12pt;">a</span>
+<span style="">．在运行时判断任意一个对象所属的类。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="font-size: 12pt;">b</span>
+<span style="">．在运行时构造任意一个类的对象。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="font-size: 12pt;">c</span>
+<span style="">．在运行时判断任意一个类所具有的成员变量和方法。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="font-size: 12pt;">d</span>
+<span style="">．在运行时调用任意一个对象的方法。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="">在</span>
+<span style="font-size: 12pt;">JDK</span>
+<span style="">中，主要由以下类来实现</span>
+<span style="font-size: 12pt;">Java</span>
+<span style="">反射机制，这些类在</span>
+<span style="color: #0000ff; font-size: 12pt;">java.lang.reflect</span>
+<span style="">包中：</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="color: #0000ff; font-size: 12pt;">Class</span>
+<span style="">类：代表一个类。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="color: #0000ff; font-size: 12pt;">Field
+ </span>
+<span style="">类：代表类的成员变量（成员变量也
+称为类的属性）。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="color: #0000ff; font-size: 12pt;">Method</span>
+<span style="">类：代表类的方法。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="font-size: 12pt;"><span style="color: #0000ff;"><span style="font-size: 12pt;">Constructor</span>
+</span>
+ </span>
+<span style="">类：代表类的构造方法。</span>
+</p>
+<p style="text-align: left; text-indent: 21pt;" class="MsoNormal"><span style="color: #0000ff; font-size: 12pt;">Array</span>
+<span style="">类：提供了动态创建数组，以及访问数组的元素的静态方法。<br><br>
+&nbsp;&nbsp;&nbsp;<span style="">下面写了一个程序：设计了一个</span>
+<span style="color: #0000ff; font-size: 12pt;">POJO</span>
+<span style="">类。所谓</span>
+<span style="font-size: 12pt;">POJO</span>
+<span style="">类，本人粗浅的理解即和</span>
+<span style="font-size: 12pt;">JavaBean</span>
+<span style="">类似，只有字段和</span>
+<span style="font-size: 12pt;">setter/getter</span>
+<span style="">方法。然后在主函数通过反射，在控制台打印该</span>
+<span style="font-size: 12pt;">POJO</span>
+<span style="">类的所有字段和方法。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="">本人设计的</span>
+<span style="font-size: 12pt;">POJO</span>
+<span style="">类为</span>
+<span style="color: #0000ff; font-size: 12pt;">WorkerPOJO.java</span>
+<span style="">，然后另一个测试类为</span>
+<span style="">POJOReflection.java</span>
+<span style="">，在</span>
+<span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">main</span>
+<span style="">函数中负责打印该类的所有字段和方法。程序见下：<br><br><span style="font-size: 10pt;"><span style="font-size: 12pt;"><span style="color: #0000ff;"><span style="font-size: 12pt;">WorkerPOJO.java</span>
+：<br></span>
+</span>
+<br></span>
+</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;">package 
+com.xpec.landon.trainjava.annotation;<br>
+/**<br>
+&nbsp;* POJO类，和JavaBean相似<br>
+&nbsp;* @author lvwenyong<br>
+&nbsp;*<br>
+&nbsp;*/<br>
+public class WorkerPOJO{<br>
+&nbsp;private String name;<br>
+&nbsp;private int age;<br>
+&nbsp;<br>
+&nbsp;/**<br>
+&nbsp; * 用Annotation修饰<br>
+&nbsp; * @return 姓名<br>
+&nbsp; */<br><span style="color: #0000ff;">&nbsp;@WorkerPOJOAnnotation(name = 
+"landon",age = 22)</span>
+<br>
+&nbsp;public String getName() {<br>
+&nbsp;&nbsp;return name;<br>
+&nbsp;}<br>
+&nbsp;public void setName(String name) {<br>
+&nbsp;&nbsp;this.name = name;<br>
+&nbsp;}<br>
+&nbsp;public int getAge() {<br>
+&nbsp;&nbsp;return age;<br>
+&nbsp;}<br>
+&nbsp;public void setAge(int age) {<br>
+&nbsp;&nbsp;this.age = age;<br>
+&nbsp;}</span>
+</p>
+<p><span style="font-size: 10pt;">}<br><br><span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;"><span style=""><span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">POJOReflection.java</span>
+：</span>
+</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;">package 
+com.xpec.landon.trainjava.annotation;<br>
+import java.lang.reflect.Field;<br>
+import java.lang.reflect.Modifier;<br>
+import java.lang.reflect.Method;</span>
+</p>
+<p><br><span style="font-size: 10pt;">/**<br>
+&nbsp;* 运用Java的反射机制，输出POJO类的字段和方法（新增了Annotation的修饰）<br>
+&nbsp;* @author lvwenyong<br>
+&nbsp;*<br>
+&nbsp;*/<br>
+public class POJOReflectionTest {<br>
+&nbsp;public static void main(String[] args)<br>
+&nbsp;{<br>
+&nbsp;&nbsp;try <br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;//加载WorkPOJO,注意这里一定要写全类名，包括包名，因为包名是类名的一部分<br>
+&nbsp;&nbsp;&nbsp;Class pojo = 
+Class.forName("com.xpec.landon.trainjava.annotation.WorkerPOJO");<br>
+&nbsp;&nbsp;&nbsp;//获取域的数组<br>
+&nbsp;&nbsp;&nbsp;Field []fieldList = pojo.getDeclaredFields();<br>
+&nbsp;&nbsp;&nbsp;//获取方法的数组<br>
+&nbsp;&nbsp;&nbsp;Method []methodList = pojo.getDeclaredMethods();<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;System.out.println("WorkerPOJO类的所有字段：");<br>
+&nbsp;&nbsp;&nbsp;System.out.println("修饰符" + "&nbsp;&nbsp;&nbsp; " + "类型" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + 
+"字段名");<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;for(int i = 0;i &lt; fieldList.length;i++)<br>
+&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Field field = fieldList[i];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//用下面的形式获取具体的修饰符<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(Modifier.toString(field.getModifiers()) + " " + 
+field.getType() + " " + field.getName());<br>
+&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;System.out.println();<br>
+&nbsp;&nbsp;&nbsp;System.out.println("WorkerPOJO类的所有方法(不包括annotation修饰的方法)：");<br>
+&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;for(int j = 0;j &lt; methodList.length;j++)<br>
+&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Method method = methodList[j];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//判断方法是否被Annotation修饰<br>
+&nbsp;&nbsp;&nbsp;&nbsp;boolean methodAnnotation = 
+method.isAnnotationPresent(WorkerPOJOAnnotation.class);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//如果被annotation修饰，则过滤掉该方法，即不输出<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if(methodAnnotation)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//获取方法参数列表<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Class parameters[] = method.getParameterTypes();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(Modifier.toString(method.getModifiers()) + " " + 
+method.getReturnType() + " " + method.getName() + " (");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for(int k = 0;k &lt; parameters.length;k++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(parameters[k].toString());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(")");<br>
+&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;catch(ClassNotFoundException exception1)<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;exception1.printStackTrace();<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<br>
+&nbsp;}</span>
+</p>
+<p><span style="font-size: 10pt;">}<br></span>
+&nbsp;&nbsp;&nbsp;&nbsp;下面是程序的一个运行截图：<br><br><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/reflection.jpg" alt="" border="0"><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;可以看到，在WorkerPOJO类中引入了<span style="color: #0000ff;">Annotation</span>
+。
+下面，我们详细介绍一下Annotation：<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="">在使用</span>
+<span style="font-size: 12pt;">JUnit4</span>
+<span style="">中，我们可以看到在每个测试方法前面都有一个</span>
+<span style="color: #0000ff; font-size: 12pt;">@Test</span>
+<span style="">标记，这就是传说中的</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="font-size: 12pt;"><span style="color: #0000ff;"><span style="font-size: 12pt;">Annotation</span>
+</span>
+ </span>
+<span style="">提供了一条与程序元素关联任何信息或者任何元数据（</span>
+<span style="font-size: 12pt;">metadata</span>
+<span style="">）的途径。从某些方面看，</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">就像修饰符一样被使用，并应用于包、类型、构造方法、方法、成
+员变量、参数、本地变量的声明中。这些信息被存储在</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">的</span>
+<span style="font-size: 12pt;">“name=value”</span>
+<span style="">结构对中。</span>
+<span style="font-size: 12pt;"> 
+annotation</span>
+<span style="">类型是一种接
+口，能够通过</span>
+<span style="font-size: 12pt;">java</span>
+<span style="">反射</span>
+<span style="font-size: 12pt;">API</span>
+<span style="">的方式提供对其信息的访问。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">能被用来为某个程序元素（类、方法、成员变量等）关联任何的信
+息。需要注意的是，这里存在着一个基本的潜规则：</span>
+<span style="font-size: 12pt;">annotaion</span>
+<span style="">不能影响程序代码的执行，无论增加、删除</span>
+<span style="font-size: 12pt;"> annotation</span>
+<span style="">，代码都始终如一的执行。另外，尽管一些</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">通
+过</span>
+<span style="font-size: 12pt;">java</span>
+<span style="">的反射</span>
+<span style="font-size: 12pt;">api</span>
+<span style="">方法在运行时被访问，而</span>
+<span style="font-size: 12pt;">java</span>
+<span style="">语言解释器在工作时忽略了这些</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">。正是由于</span>
+<span style="font-size: 12pt;">java</span>
+<span style="">虚拟机忽略了</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">，导致了</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">类型在代码中是</span>
+<span style="font-size: 12pt;">“</span>
+<span style="">不起作用</span>
+<span style="font-size: 12pt;">”</span>
+<span style="">的；只有通过某种配套的工具才会对</span>
+<span style="font-size: 12pt;">annotation</span>
+<span style="">类型中的信息进行访问和处理。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="font-size: 12pt;">&nbsp;annotation</span>
+<span style="">是与一个程序元素相关联信息或者元数据的标注。它从不影响<br></span>
+<span style="font-size: 12pt;">ava</span>
+<span style="">程序的执行，但是对例如编译器警告或者像文档生成器等辅助工具产
+生影响。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span style="">我的理解是：</span>
+<span style="font-size: 12pt;"><span style="color: #0000ff;"><span style="font-size: 12pt;">Annotation</span>
+<span style="">是继承自</span>
+<strong><span style="font-size: 12pt;">java.lang.annotation.Annotation</span>
+</strong>
+<span style="">的类，用于向程序分析工具或虚拟机提供</span>
+<span style="font-size: 12pt;">package class field methed </span>
+<span style="">等方面的信息，它和其他类没什么区别</span>
+<span style="font-size: 12pt;">,</span>
+<span style="">除了使用方式。</span>
+</span>
+</span>
+<span style=""><br>
+&nbsp;&nbsp;&nbsp;&nbsp;下面写了一个简单的Annotation：<span><span style="color: #0000ff;"><span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">WorkerPOJOAnnotation.java</span>
+</span>
+</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;">package 
+com.xpec.landon.trainjava.annotation;<br>
+import java.lang.annotation.Documented;<br>
+import java.lang.annotation.ElementType;<br>
+import java.lang.annotation.Retention;<br>
+import java.lang.annotation.RetentionPolicy;<br>
+import java.lang.annotation.Target;</span>
+</p>
+<p><span style="font-size: 10pt;">/**<br>
+&nbsp;* 修饰WorkerPOJO类方法的一个Annotation<br>
+&nbsp;* @author lvwenyong<br>
+&nbsp;*<br>
+&nbsp;*/</span>
+</p>
+<p><span style="font-size: 10pt;">@Target(ElementType.METHOD)<br>
+@Retention(RetentionPolicy.RUNTIME)<br>
+@Documented<br>
+public @interface WorkerPOJOAnnotation {<br>
+&nbsp;String name();<br>
+&nbsp;int age();</span>
+</p>
+<p><span style=""><span style="font-size: 10pt;">}<br></span>
+<br></span>
+<span style="">&nbsp;&nbsp;&nbsp;&nbsp;其
+中</span>
+<span style="color: #0000ff; font-size: 12pt;">@Target</span>
+<span style="">里面的</span>
+<span style="color: #0000ff; font-size: 12pt;">ElementType</span>
+<span style="">是用来指定</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">类型可以用在哪一些元素上的，包括</span>
+<span style="font-size: 12pt;">TYPE</span>
+<span style="">（类型），</span>
+<span style="font-size: 12pt;">METHOD</span>
+<span style="">（方法），</span>
+<span style="font-size: 12pt;">FIELD</span>
+<span style="">（字段），</span>
+<span style="font-size: 12pt;">PARAMETER</span>
+<span style="">（参数）等。其中</span>
+<span style="font-size: 12pt;">TYPE</span>
+<span style="">是指可以用在</span>
+<span style="font-size: 12pt;">Class,Interface</span>
+<span style="">等类型上。下面给出用</span>
+<span style="color: #0000ff; font-size: 12pt;">jad</span>
+<span style=""><span style="color: #0000ff;"><span style="">反编译</span>
+</span>
+出的</span>
+<span style="font-size: 12pt;">ElementType</span>
+<span style="">中的静态变量的截图：<br><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/annotation1.jpg" alt="" border="0"><br><span style="">&nbsp;&nbsp;&nbsp;&nbsp;另外</span>
+<span style="color: #0000ff; font-size: 12pt;">@Retention</span>
+<span style="">中的</span>
+<span style="color: #0000ff; font-size: 12pt;">RetentionPolicy</span>
+<span style="">是指</span>
+<span style="color: black; font-size: 12pt;">Annotation</span>
+<span style="">中的信息保留方式，</span>
+<span style="">分别是</span>
+<span style="font-size: 12pt;">SOURCE,CLASS </span>
+<span style="">和</span>
+<span style="font-size: 12pt;"> RUNTIME. 
+SOURCE</span>
+<span style="">代表的是这个</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">类型的信息只会保留在程序源码里，源码如果经过了编译之后，</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">的数据就会消失</span>
+<span style="font-size: 12pt;">,</span>
+<span style="">并不会保留在编译好的</span>
+<span style="font-size: 12pt;">.class</span>
+<span style="">文件里面。</span>
+<span style="font-size: 12pt;"> ClASS</span>
+<span style="">的意思是这个</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">类型的信息保留在程序源码里</span>
+<span style="font-size: 12pt;">,</span>
+<span style="">同时也会保留在编译好的</span>
+<span style="font-size: 12pt;">.class</span>
+<span style="">文件里面</span>
+<span style="font-size: 12pt;">,</span>
+<span style="">在执行的时候，并不会把这一些信息加载到虚拟机</span>
+<span style="font-size: 12pt;">(JVM)</span>
+<span style="">中去</span>
+<span style="font-size: 12pt;">.</span>
+<span style="">注意一下，当你没有设定一个</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">类型的</span>
+<span style="font-size: 12pt;">Retention</span>
+<span style="">值时，系统默认值是</span>
+<span style="font-size: 12pt;">CLASS. </span>
+<span style="">第三个</span>
+<span style="font-size: 12pt;">,</span>
+<span style="">是</span>
+<span style="font-size: 12pt;">RUNTIME,</span>
+<span style="">表示在源码、编译好的</span>
+<span style="font-size: 12pt;">.class</span>
+<span style="">文件中保留信息，在执行的时候会把这一些信息加载到</span>
+<span style="font-size: 12pt;">JVM</span>
+<span style="">中去的．<br><span style="">&nbsp;&nbsp;&nbsp;&nbsp;下面给出用</span>
+<span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">jad</span>
+<span style="">反编译出的</span>
+<span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; color: black; font-size: 12pt;">RetentionPolicy</span>
+<span style="">中的静态变量的截图</span>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/annotation2.jpg" alt="" border="0"><br><span style="">&nbsp;&nbsp;&nbsp;&nbsp;最后的一个</span>
+<span style="font-size: 12pt;"><a style="color: #0000ff;" href="mailto:Annotation@Documented">Annotation@Documented</a>
+</span>
+<span style="">是指目的就是让这一个</span>
+<span style="font-size: 12pt;">Annotation</span>
+<span style="">类型的信息能够显示在</span>
+<span style="font-size: 12pt;">Java 
+API</span>
+<span style="">说明文档上。</span>
+</span>
+</span>
+</p>
+<p style="text-align: left;" class="MsoNormal"><span style="">&nbsp;&nbsp;&nbsp;&nbsp;下面将上面自己设计的</span>
+<span style="color: #0000ff; font-size: 12pt;">WorkerPOJOAnnotation</span>
+<span style="">应用在了</span>
+<span style="font-size: 12pt;">WorkerPOJO</span>
+<span style="">类的一个方法前面：<img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/annotation3.jpg" height="150" width="432" alt="" border="0"><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="">然后在控制台输出了没有被</span>
+<span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">Annotation</span>
+<span style="">注释的字段和方法，运行后可以看到不包括</span>
+<span style="font-family: &#39;Times New Roman&#39;,&#39;serif&#39;; font-size: 12pt;">getName</span>
+<span style="">方法。</span>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;最后我们可以用<span style="color: #0000ff;">Junit4</span>
+书写一个测试用例：<span style=""><span style="">&nbsp;<span style="color: #0000ff;"><span style="">POJOReflectionJunit4Test</span>
+.java<br></span>
+</span>
+</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">package 
+com.xpec.landon.trainjava.annotation;<br>
+import java.lang.reflect.Field;<br>
+import java.lang.reflect.Method;</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">import 
+javax.activation.FileDataSource;</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">import 
+junit.framework.Assert;</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">import 
+org.junit.After;<br>
+import org.junit.Before;<br>
+import org.junit.Test;</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">/**<br>
+&nbsp;* 关于Java反射以及Annotation的一个TestCase<br>
+&nbsp;* @author lvwenyong<br>
+&nbsp;*<br>
+&nbsp;*/</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">public class 
+POJOReflectionJunit4Test {<br>
+&nbsp;private Class pojo;<br>
+&nbsp;private Field []fieldList;<br>
+&nbsp;private Method[] methodList;</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">&nbsp;<span style="color: #0000ff;">@Before<br></span>
+&nbsp;public void setUp() throws Exception {<br>
+&nbsp;&nbsp;//加载类WorkPOJO<br>
+&nbsp;&nbsp;pojo = 
+Class.forName("com.xpec.landon.trainjava.annotation.WorkerPOJO");<br>
+&nbsp;&nbsp;//获取域的数组<br>
+&nbsp;&nbsp;fieldList = pojo.getDeclaredFields();<br>
+&nbsp;&nbsp;//获取方法的数组<br>
+&nbsp;&nbsp;methodList = pojo.getDeclaredMethods();<br>
+&nbsp;}<br>
+&nbsp;<br>
+&nbsp;//测试字段和方法的个数<br><span style="color: #0000ff;">&nbsp;@Test<br></span>
+&nbsp;public void testSize()<br>
+&nbsp;{<br>
+&nbsp;&nbsp;Assert.assertEquals(2, fieldList.length);<br>
+&nbsp;&nbsp;Assert.assertEquals(4, methodList.length);<br>
+&nbsp;}</span>
+</span>
+</p>
+<p><span style="font-size: 10pt;"><span style="">&nbsp;//测试字段是否带有annotations<br>
+&nbsp;@Test<br>
+&nbsp;public void isFieldAnnotation()<br>
+&nbsp;{<br>
+&nbsp;&nbsp;for(int i = 0;i &lt; fieldList.length;i++)<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;Assert.assertEquals(false, 
+fieldList[i].isAnnotationPresent(WorkerPOJOAnnotation.class));<br>
+&nbsp;&nbsp;}<br>
+&nbsp;}<br>
+&nbsp;<br>
+&nbsp;//测试方法是否带有annotations<br><span style="color: #0000ff;">&nbsp;@Test<br></span>
+&nbsp;public void isMethodAnnotation()<br>
+&nbsp;{<br>
+&nbsp;&nbsp;for(int i = 0;i &lt; methodList.length;i++)<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;Assert.assertEquals(false, 
+methodList[i].isAnnotationPresent(WorkerPOJOAnnotation.class));<br>
+&nbsp;&nbsp;}<br>
+&nbsp;}<br>
+&nbsp;<br><span style="color: #0000ff;">&nbsp;@After</span>
+<br>
+&nbsp;public void tearDown() throws Exception {<br>
+&nbsp;}</span>
+</span>
+</p>
+<p>
+<span style="font-size: 10pt;"><span style="">}</span>
+</span>
+</p>
+  </div>
+
+  
+
+
+  <div>
+      <script type="text/javascript"><!--
+      google_ad_client = "ca-pub-5061364613986259";
+      google_ad_slot = "6421375412";
+      google_ad_width = 728;
+      google_ad_height = 90;
+      //--></script>
+      <script type="text/javascript" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/show_ads.js">
+      </script><ins style="display:inline-table;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent"><ins id="aswift_0_anchor" style="display:block;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent"><iframe width="728" height="90" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;"></iframe></ins></ins>
+    </div>
+  
+  <div id="bottoms" class="clearfix">
+    
+    <div id="share_weibo">分享到：
+      <a data-type="sina" href="javascript:;" title="分享到新浪微博"><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/sina.jpg"></a>
+      <a data-type="qq" href="javascript:;" title="分享到腾讯微博"><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/tec.jpg"></a>
+    </div>
+  </div>
+
+  <div class="blog_nav">
+    <div class="pre_next">
+      <a href="http://justjavac.iteye.com/blog/714658" class="next" title="最封闭的开源系统：话说 Android 的八宗罪">最封闭的开源系统：话说 Android 的八宗罪</a>
+      |
+      <a href="http://justjavac.iteye.com/blog/714648" class="pre" title="JUnit4 和JUnit3的区别">JUnit4 和JUnit3的区别</a>
+    </div>
+  </div>
+  <div class="blog_bottom">
+    <ul>
+      <li>2010-07-16 17:51</li>
+      <li>浏览 2277</li>
+      <li><a href="http://justjavac.iteye.com/blog/714654#comments">评论(0)</a></li>
+      
+      
+      <li>分类:<a href="http://www.iteye.com/blogs/category/language">编程语言</a></li>      
+      <li class="last"><a href="http://www.iteye.com/wiki/blog/714654" target="_blank" class="more">相关推荐</a></li>
+    </ul>
+  </div>
+
+  <div class="blog_comment">
+    <h5>评论</h5>
+    <a id="comments" name="comments"></a>
+    
+    
+    
+  </div>
+
+  <div class="blog_comment">
+    <h5>发表评论</h5>
+            <p style="text-align:center; margin-top:30px;margin-bottom:0px;"><a href="http://justjavac.iteye.com/login" style="background-color:white;"> <img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/login_icon.png" style="vertical-align:middle; margin-right: 10px;"></a><a href="http://justjavac.iteye.com/login">  您还没有登录,请您登录后再发表评论 </a></p>
+      </div>
+</div>
+
+
+<script type="text/javascript">
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+
+  $$('#main .blog_content pre[name=code]').each(function(pre, index){ // blog content
+    var post_id = 714654;
+    var location = window.location;
+    source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+    pre.writeAttribute('codeable_id', post_id);
+    pre.writeAttribute('codeable_type', "Blog");
+    pre.writeAttribute('source_url', source_url);
+    pre.writeAttribute('pre_index', index);
+    pre.writeAttribute('title', 'Java 反射机制及Annotation');
+  });
+
+  fix_image_size($$('div.blog_content img'), 700);
+
+  function processComment() {
+    $$('#main .blog_comment > div').each(function(comment){// comment
+      var post_id = comment.id.substr(2);
+      $$("#"+comment.id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + comment.id;
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('codeable_type', "BlogComment");
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', 'Java 反射机制及Annotation');
+      });
+    });
+  }
+
+  function quote_comment(id) {
+    new Ajax.Request('/editor/quote', {
+      parameters: {'id':id, 'type':'BlogComment'},
+      onSuccess:function(response){editor.bbcode_editor.textarea.insertAfterSelection(response.responseText);
+        Element.scrollTo(editor.bbcode_editor.textarea.element);}
+    });
+  }
+
+  code_favorites_init();
+  processComment();
+  new WeiboShare({share_buttons: $('share_weibo'), img_scope: $('blog_content')});
+</script>
+
+
+
+
+        </div>
+
+        <div id="local">
+          <div class="local_top"></div>
+          <div id="blog_owner">
+  <div id="blog_owner_logo"><a href="http://justjavac.iteye.com/"><img alt="justjavac的博客" class="logo" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/59c752b0-7fe9-32d2-9bf0-b7dc1a018120.jpg" title="justjavac的博客: justjavac(迷渡)"></a></div>
+  <div id="blog_owner_name">justjavac</div>
+</div>
+
+          <div id="blog_actions">
+            <ul>
+              <li>浏览: 1863376 次</li>
+              <li>性别: <img alt="Icon_minigender_1" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/icon_minigender_1.gif" title="男"></li>
+              <li>来自: 天津</li>
+              <li><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/offline.gif"></li>
+              
+            </ul>
+          </div>
+          <div id="user_visits" class="clearfix">
+            <h5>最近访客 <span style="font-weight:normal;font-size:12px;padding-left:30px;"><a href="http://justjavac.iteye.com/blog/user_visits">更多访客&gt;&gt;</a></span></h5>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://cailangwei.iteye.com/" target="_blank"><img alt="cailangwei的博客" class="logo" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/user-logo-thumb.gif" title="cailangwei的博客: Coding"></a></div>
+                <div class="left"><a href="http://cailangwei.iteye.com/" target="_blank" title="cailangwei">cailangwei</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://dylinshi126.iteye.com/" target="_blank"><img alt="dylinshi126的博客" class="logo" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/user-logo-thumb.gif" title="dylinshi126的博客: "></a></div>
+                <div class="left"><a href="http://dylinshi126.iteye.com/" target="_blank" title="dylinshi126">dylinshi126</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://gds718.iteye.com/" target="_blank"><img alt="gds718的博客" class="logo" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/user-logo-thumb.gif" title="gds718的博客: "></a></div>
+                <div class="left"><a href="http://gds718.iteye.com/" target="_blank" title="gds718">gds718</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://kobeweare.iteye.com/" target="_blank"><img alt="kobeweare的博客" class="logo" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/user-logo-thumb.gif" title="kobeweare的博客: "></a></div>
+                <div class="left"><a href="http://kobeweare.iteye.com/" target="_blank" title="kobeweare">kobeweare</a></div>
+              </div>
+            
+          </div>
+
+          
+            <div>
+              <h5>博客专栏</h5>
+              
+
+  
+  <dl class="series" style="padding-bottom:5px;">
+    <dt>
+      <a href="http://www.iteye.com/blogs/subjects/justjavac" target="_blank"><img alt="7eca6ee3-d299-3924-8342-02305099fd96" src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/7eca6ee3-d299-3924-8342-02305099fd96.jpg"></a>
+    </dt>
+    <dd>
+    <a href="http://www.iteye.com/blogs/subjects/justjavac" target="_blank" title="实战 Groovy">实战 Groovy</a><br>
+      <span class="visited">浏览量：6659</span>
+    </dd>
+  </dl>
+  
+
+
+            </div>
+          
+
+                      <div id="blog_menu">
+              <h5>文章分类</h5>
+              <ul>
+                <li><a href="http://justjavac.iteye.com/">全部博客 (623)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/249538">代码之谜 (6)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/275151">JavaScript quirks (5)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/27974">程序员 (89)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/28320">Java (93)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/28272">BT编程 (7)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/102517">html/css (64)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/29623">Groovy&amp;Grails (42)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/112093">Android (20)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/39325">C/C++ (5)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/102515">PHP/Perl/Python (46)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/31030">经典文章 (51)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/111589">CodeIgniter (14)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/111860">JQuery (10)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/39195">笑话 (4)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/102516">其他 (32)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/116117">javascript (63)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/205678">云计算 (0)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/213722">html5 (6)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/213741">面试 (8)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/213742">google (2)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/214171">nosql (2)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/215530">nodejs (11)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/217892">go (5)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/217893">erlang (1)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/218070">小常识 (3)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/219286">冷知识 (5)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/220381">database (4)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/220382">web (9)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/225338">架构 (11)</a></li>
+                
+                  <li><a href="http://justjavac.iteye.com/category/268502">Exception (0)</a></li>
+                
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>社区版块</h5>
+              <ul>
+                <li><a href="http://justjavac.iteye.com/blog/news">我的资讯</a> (9)</li>
+                <li>
+                  <a href="http://justjavac.iteye.com/blog/post">我的论坛</a> (39)
+                </li>
+                <li><a href="http://justjavac.iteye.com/blog/answered_problems">我的问答</a> (8)</li>
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>存档分类</h5>
+              <ul>
+                
+                  <li><a href="http://justjavac.iteye.com/blog/monthblog/2014-02">2014-02</a> (1)</li>
+                
+                  <li><a href="http://justjavac.iteye.com/blog/monthblog/2014-01">2014-01</a> (2)</li>
+                
+                  <li><a href="http://justjavac.iteye.com/blog/monthblog/2013-12">2013-12</a> (4)</li>
+                
+                <li><a href="http://justjavac.iteye.com/blog/monthblog_more">更多存档...</a></li>
+              </ul>
+            </div>
+            
+            
+              <div id="comments_top">
+                <h5>评论排行榜</h5>
+                <ul>
+                  
+                    <li><a href="http://justjavac.iteye.com/blog/1998207" title="Java NIO与IO的详细区别(通俗篇)">Java NIO与IO的详细区别(通俗篇)</a></li>
+                  
+                    <li><a href="http://justjavac.iteye.com/blog/1995172" title="告别码农，成为真正的程序员">告别码农，成为真正的程序员</a></li>
+                  
+                    <li><a href="http://justjavac.iteye.com/blog/1864938" title="回复：浮点数0.57 0.58 造出的坑爹问题">回复：浮点数0.57 0.58 造出的坑爹问题</a></li>
+                  
+                    <li><a href="http://justjavac.iteye.com/blog/1980823" title="苦B程序员们，你的法拉利呢？">苦B程序员们，你的法拉利呢？</a></li>
+                  
+                    <li><a href="http://justjavac.iteye.com/blog/1839869" title="老生常谈：面试算法有必要吗？">老生常谈：面试算法有必要吗？</a></li>
+                  
+                </ul>
+              </div>
+            
+
+            <div id="guest_books">
+              <h5>最新评论</h5>
+              <ul>
+                
+                <li>
+                  <a href="http://skyfar666.iteye.com/" target="_blank" title="zqb666kkk">zqb666kkk</a>： 
+                  写的 真好 我看了 java核心技术基础篇 泛型类型擦除这块  ...<br>
+                  <a href="http://justjavac.iteye.com/blog/1741638#bc2341639">Java泛型－类型擦除</a>
+                </li>
+                
+                <li>
+                  <a href="http://ijlkdwg.iteye.com/" target="_blank" title="ijlkdwg">ijlkdwg</a>： 
+                  shusansheng 写道预读，在所有操作系统上都可以实现。 ...<br>
+                  <a href="http://justjavac.iteye.com/blog/1998207#bc2341156">Java NIO与IO的详细区别(通俗篇)</a>
+                </li>
+                
+                <li>
+                  <a href="http://p2227.iteye.com/" target="_blank" title="p2227">p2227</a>： 
+                  现在iteye支持markdown啊<br>
+                  <a href="http://justjavac.iteye.com/blog/2019153#bc2340047">JavaScript Puzzlers 解密（一）：为什么 ["1", "2", "3"].map(parseInt) 返回 [1, NaN, NaN]？</a>
+                </li>
+                
+                <li>
+                  <a href="http://yu633.iteye.com/" target="_blank" title="yu633">yu633</a>： 
+                  格式真漂亮，看下来思路非常清晰。<br>
+                  <a href="http://justjavac.iteye.com/blog/2019153#bc2340012">JavaScript Puzzlers 解密（一）：为什么 ["1", "2", "3"].map(parseInt) 返回 [1, NaN, NaN]？</a>
+                </li>
+                
+                <li>
+                  <a href="http://mfkvfn.iteye.com/" target="_blank" title="mfkvfn">mfkvfn</a>： 
+                  15/36&nbsp;<br>
+                  <a href="http://justjavac.iteye.com/blog/2019153#bc2339979">JavaScript Puzzlers 解密（一）：为什么 ["1", "2", "3"].map(parseInt) 返回 [1, NaN, NaN]？</a>
+                </li>
+                
+              </ul>
+            </div>
+
+            <div class="local_bottom"></div>
+          
+        </div>
+      </div>
+
+      <div id="footer" class="clearfix">
+        <div id="copyright">
+          <hr>
+          声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。若作者同意转载，必须以超链接形式标明文章原始出处和作者。<br>
+          © 2003-2014 ITeye.com.   All rights reserved.  [ 京ICP证110151号  京公网安备110105010620 ]
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+  document.write("<img src='http://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</script><img src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/saved_resource" width="0" height="0">
+
+<script src="./Java 反射机制及Annotation - justjavac(迷渡) - ITeye技术网站_files/tracking.js" type="text/javascript"></script>
+
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-8784195-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+      
+    
+  
+
+<iframe width="0" height="0" frameborder="0" src="about:blank" id="GINGER_SOFTWARE_contextMenuIFrame" scrolling="no" style="border: 0px solid; z-index: 2147483647; height: 0px; width: 0px; background-color: transparent;"></iframe><iframe width="0" height="0" frameborder="0" src="about:blank" id="GINGER_SOFTWARE_bubblesIFrame" scrolling="no" style="border: 0px solid; position: absolute; z-index: 2147483647; height: 0px; width: 0px; background-color: transparent;"></iframe><div id="GingerWidgetInfo" style="display:none;">{"version":"0.1.0.382","isExtension":true,"extensionName":"Chrome"}</div></body></html>
